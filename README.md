@@ -1,6 +1,6 @@
 # 20222-team-15
 20222-team-15
-Trabalho final da disciplina de inf112 - programação 2
+Trabalho final da disciplina de INF112 - Programação 2
 
     -> Jogo de tabuleiro inspirado em 100% orange juice
         
@@ -11,7 +11,7 @@ Trabalho final da disciplina de inf112 - programação 2
             Casas Laranjas: Deixará cair 4 Abacaxis
             Casas Amarelas: Encontrará 4 Abacaxis, que sorte
             Casas Rosas: Será teleportado para o outro canto do mapa
-            Casas de Cura: Terá sua vida restaurada por completo e, caso tenha no mínimo 5 Abacaxis poderá depositálos no pote
+            Casas de Cura: Terá sua vida restaurada por completo e, caso tenha no mínimo 5 Abacaxis, poderá depositálos no pote
             Casas Cinzas: Não fazem nada
             Um de seus companheiros caídos: Ele ressucitará com metade da vida máxima
         
