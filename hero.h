@@ -11,6 +11,7 @@ class Hero : public CharacterIF{
     int _atk;
     int _life;
     int _maxLife;
+    int _def;
     int _esqv;
     int _pine;
     char _direcao;
@@ -24,11 +25,11 @@ class Hero : public CharacterIF{
     int _dy;
     
     public:
-    Hero(std::string name, int atk, int life, int esqv, int dx, int dy, int desloc, int pine, char di);
+    Hero(std::string name, int atk, int life, int def, int esqv, int dx, int dy, int desloc, int pine, char di);
     ~Hero();
     virtual char getDirecao();
     virtual void setDirecao(char d);
-    void walk(char mapa[10][10], int x, int y);
+    void walk(char mapa[10][10], int mousex, int mousey);
 
     void setPineapple(int x);
     int getPineapple();
@@ -62,6 +63,9 @@ class Hero : public CharacterIF{
     virtual void setY(int y);
 
     int getTam();
+
+    void setOpcao(int& opc);
+    void validarOpcao(int opc);
 
     int _desloc; //VARIAVEL PARA GUARDAR O TAMANHO DO PERSONAGEM NO TABULEIRO
 };

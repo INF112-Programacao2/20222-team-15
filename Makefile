@@ -25,6 +25,9 @@ board.o: board.cpp board.h
 	g++ -c -o board.o board.cpp
 
 clean:
+	del board.o
+	del bossEnemy.o
+	del enemy.o
 	del hero.o
 	del main.o 
 	del main.exe

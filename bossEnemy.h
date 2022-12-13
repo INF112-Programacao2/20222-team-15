@@ -19,7 +19,7 @@ class BossEnemy : public Enemy{
     BossEnemy(std::string nome, int life, int dx, int dy, int especial,  int desloc, char di);
     ~BossEnemy();
    
-    void walk();
+    void walk(char mapa[10][10]);
     virtual char getDirecao();
     virtual void setDirecao(char d);
 

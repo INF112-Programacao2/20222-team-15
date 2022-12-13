@@ -9,16 +9,19 @@
 #include <iostream>
 #include <string>
 #include <time.h>
+#include <exception>
 
 #include "character.h"
 #include "hero.h"
 
 int Hero::_abacaxis = 0;
 
-Hero::Hero(std::string name, int atk, int life, int esqv, int dx, int dy, int desloc, int pine, char di){
+Hero::Hero(std::string name, int atk, int life, int def, int esqv, int dx, int dy, int desloc, int pine, char di){
     _name = name;
     _atk = atk;
     _life = life;
+    _def = def;
+    _esqv = esqv;
     _maxLife = life;
     _sw = 40;
     _desloc = desloc;
@@ -32,254 +35,247 @@ Hero::Hero(std::string name, int atk, int life, int esqv, int dx, int dy, int de
 Hero::~Hero(){
 }
 
-void Hero::walk(char mapa[10][10], int x, int y){
+void Hero::walk(char mapa[10][10], int mousex, int mousey){
+    /*
+    setX(mousex); //PARA FACILITAR TESTES
+    setY(mousey);
+    */
     int d = rollDice();
     int opc = 0;
-    std::cout << "\n\n" <<  getName() << "\nDado: " << d << "\n";
+    std::cout << "~~~~~~~~~~~~\n" <<  getName() << " jogou o dado: " << d << "\n";
+    int x = getX();
+    int y = getY();
+
     while(d != 0){
+        int opc = 0;
+        //INDO PARA BAIXO
         if(_direcao == 'b'){
-            //encrusilhada de fora
-            if(getY() == 4 && getX() == 0){
-                std::cout << "Bifurcacao faltam " << d << " casas para andar\n1. Baixo\n2. Direita";
-                while (opc != 1 && opc !=2){
-                    std::cin >> opc;
-                }
+            //BIFURCACAO DE FORA
+            if(y == 4 && x == 0){
+                std::cout << "Faltam " << d << " casas para andar\n1. Baixo\n2. Direita\n";
+                setOpcao(opc);
                 if(opc == 1){
-                    setY(getY()+1);
+                    y += 1;
                     d--;
                     continue;
                 }
-                else{
-                    setX(getX()+1);
-                    d--;
+                if(opc == 2){
                     _direcao = 'd';
+                    x += 1;
+                    d--;
                     continue;
                 }
             }
-            //encrusilhada de dentro
-            else if(getY() == 4 && getX() == 2){
-                std::cout << "Bifurcacao, faltam " << d << " casas para andar\n1. Baixo\n2. Esquerda\n";
-                while (opc != 1 && opc !=2){
-                    std::cin >> opc;
-                }
-                
+            //BIFURCACAO DE DENTRO
+            else if(y == 4 && x == 2){
+                std::cout << "Faltam " << d << " casas para andar\n1. Baixo\n2. Esquerda\n";
+                setOpcao(opc);
                 if(opc == 1){
-                    setY(getY()+1);
+                    y += 1;
                     d--;
                     continue;
                 }
-                else{
-                    setX(getX()-1);
-                    d--;
+                if(opc == 2){
                     _direcao = 'e';
+                    x -= 1;
+                    d--;
                     continue;
                 }
             }
-            //entrada do quadrado externo pro interno
-            else if(getY() == 2 && getX() == 4){
+            //ENTRADA EXTERNO PRO INTERNO
+            else if(y == 2 && x == 4){
                 _direcao = 'e';
-            }
-            //saida do quadrado interno pro externo
-            else if(getY() == 8 && getX() == 4){
-                _direcao = 'd';
-            }
-            //quinas
-            else if((getY() == 8 && getX() == 0) || (getY() == 6 && getX() == 2)){
-                _direcao = 'd';
-            }
-
-            else{
-                setY(getY()+1);
+                x -= 1;
                 d--;
                 continue;
             }
+            //SAIDA INTERNO PRO EXTERNO E QUINAS
+            else if((y == 8 && x == 4) || y+1 > 8 || mapa[x][y+1] == 'P'){
+                _direcao = 'd';
+                x += 1;
+                d--;
+                continue;
+            }
+            else if(mapa[x][y+1] != 'P'){
+                y += 1;
+                d--;
+                continue;
+            }
+            if(d == 0) break;
         }
-        if(d == 0) break;
-    
+
+        //INDO PARA DIREITA
         if(_direcao == 'd'){
-            //encrusilhada de fora
-            if(getY() == 8 && getX() == 4){
-                std::cout << "Bifurcacao, faltam " << d << " casas para andar\n1. Direita\n2. Cima\n";
-                while (opc != 1 && opc !=2){
-                    std::cin >> opc;
-                }
-                
+            //BIFURCACAO DE FORA
+            if(y == 8 && x == 4){
+                std::cout << "Faltam " << d << " casas para andar\n1. Direita\n2. Cima\n";
+                setOpcao(opc);
                 if(opc == 1){
-                    setX(getX()+1);
+                    x += 1;
                     d--;
                     continue;
                 }
-                else if(opc == 2){
-                    setY(getY()-1);
-                    d--;
+                if(opc == 2){
                     _direcao = 'c';
+                    y -= 1;
+                    d--;
                     continue;
                 }
             }
-            //encrusilhada de dentro
-            else if(getY() == 6 && getX() == 4){
-                std::cout << "Bifurcacao, faltam " << d << " casas para andar\n1. Direita\n2. Baixo\n";
-                while (opc != 1 && opc !=2){
-                    std::cin >> opc;
-                }
-                
+            //BIFURCACAO DE DENTRO
+            else if(y == 6 && x == 4){
+                std::cout << "Faltam " << d << " casas para andar\n1. Direita\n2. Baixo\n";
+                setOpcao(opc);
                 if(opc == 1){
-                    setX(getX()+1);
+                    x += 1;
                     d--;
                     continue;
                 }
-                else if(opc == 2){
-                    setY(getY()+1);
-                    d--;
+                if(opc == 2){
                     _direcao = 'b';
+                    y += 1;
+                    d--;
                     continue;
                 }
             }
-            //entrada do quadrado externo pro interno
-            else if(getY() == 4 && getX() == 2){
+            //ENTRADA EXTERNO PRO INTERNO
+            else if(y == 4 && x == 2){
                 _direcao = 'b';
-            }
-            //saida do quadrado interno pro externo
-            else if(getY() == 4 && getX() == 8){
-                _direcao = 'c';
-            }
-            //quinas
-            else if((getY() == 8 && getX() == 8) || (getY() == 6 && getX() == 6)){
-                _direcao = 'c';
-            }
-
-            else{
-                setX(getX()+1);
+                y += 1;
                 d--;
                 continue;
             }
+            //SAIDA INTERNO PRO EXTERNO E QUINAS
+            else if((y == 4 && x == 8) || x+1 > 8 || mapa[x+1][y] == 'P'){
+                _direcao = 'c';
+                y -= 1;
+                d--;
+                continue;
+            }
+            else if(mapa[x+1][y] != 'P'){
+                x += 1;
+                d--;
+                continue;
+            }
+            if(d == 0) break;
         }
 
-        if(d == 0) break;
-
+        //INDO PARA CIMA
         if(_direcao == 'c'){
-            //encrusilhada de fora
-            if(getY() == 4 && getX() == 8){
-                std::cout << "Bifurcacao, faltam " << d << " casas para andar\n1. Cima\n2. Esquerda\n";
-                while (opc != 1 && opc !=2){
-                    std::cin >> opc;
-                }
-                
+            //BIFURCACAO DE FORA
+            if(y == 4 && x == 8){
+                std::cout << "Faltam " << d << " casas para andar\n1. Cima\n2. Esquerda\n";
+                setOpcao(opc);
                 if(opc == 1){
-                    setY(getY()-1);
+                    y -= 1;
                     d--;
                     continue;
                 }
-                else if(opc == 2){
-                    setX(getX()-1);
-                    d--;
+                if(opc == 2){
                     _direcao = 'e';
-                }
-            }
-            //encrusilhada de dentro
-            else if(getY() == 4 && getX() == 6){
-                std::cout << "Bifurcacao, faltam " << d << " casas para andar\n1. Cima\n2. Direita\n";
-                while (opc != 1 && opc !=2){
-                    std::cin >> opc;
-                }
-                
-                if(opc == 1){
-                    setY(getY()-1);
+                    x -= 1;
                     d--;
                     continue;
                 }
-                else if(opc == 2){
-                    setX(getX()+1);
+            }
+            //BIFURCACAO DE DENTRO
+            else if(_direcao == 'c' && y == 4 && x == 6){
+                std::cout << "Faltam " << d << " casas para andar\n1. Cima\n2. Direita\n";
+                setOpcao(opc);
+                if(opc == 1){
+                    y -= 1;
                     d--;
+                    continue;
+                }
+                if(opc == 2){
                     _direcao = 'd';
+                    x += 1;
+                    d--;
+                    continue;
                 }
             }
-            //entrada do quadrado externo pro interno
-            else if(getY() == 6 && getX() == 4){
+            //ENTRADA EXTERNO PRO INTERNO
+            else if(y == 6 && x == 4){
                 _direcao = 'd';
-            }
-            //saida do quadrado interno pro externo
-            else if(getY() == 0 && getX() == 4){
-                _direcao = 'e';
-            }
-            //quinas
-            else if((getY() == 0 && getX() == 8) || (getY() == 2 && getX() == 6)){
-                _direcao = 'e';
-            }
-            
-            else{
-                setY(getY()-1);
+                x += 1;
                 d--;
                 continue;
             }
+            //SAIDA INTERNO PRO EXTERNO E QUINAS
+            else if((y == 0 && x == 4) || y-1 < 0 || mapa[x][y-1] == 'P'){
+                _direcao = 'e';
+                x -= 1;
+                d--;
+                continue;
+            }
+            else if( mapa[x][y-1] != 'P'){
+                y-= 1;
+                d--;
+                continue;
+            }
+            if(d == 0) break;
         }
 
-        if(d == 0) break;
-
+        //INDO PARA ESQUERDA
         if(_direcao == 'e'){
-            //encrusilhada de fora
-            if(getY() == 0 && getX() == 4){
-                std::cout << "Bifurcacao, faltam " << d << " casas para andar\n1. Esquerda\n2. Baixo\n";
-                while (opc != 1 && opc !=2){
-                    std::cin >> opc;
-                }
-                
+            //BIFURCACAO DE FORA
+            if(y == 0 && x == 4){
+                std::cout << "Faltam " << d << " casas para andar\n1. Esquerda\n2. Baixo\n";
+                setOpcao(opc);
                 if(opc == 1){
-                    setX(getX()-1);
+                    x -= 1;
                     d--;
                     continue;
                 }
-                else{
-                    setY(getY()+1);
-                    d--;
+                if(opc == 2){
                     _direcao = 'b';
+                    y += 1;
+                    d--;
                     continue;
                 }
             }
-            //encrusilhada de dentro
-            else if(getY() == 2 && getX() == 4){
-                std::cout << "Bifurcacao, faltam " << d << " casas para andar\n1. Esquerda\n2. Cima\n";
-                while (opc != 1 && opc !=2){
-                    std::cin >> opc;
-                }
-                
+            //BIFURCACAO DE DENTRO
+            else if(y == 2 && x == 4){
+                std::cout << "Faltam " << d << " casas para andar\n1. Esquerda\n2. Cima\n";
+                setOpcao(opc);
                 if(opc == 1){
-                    setX(getX()-1);
+                    x -= 1;
                     d--;
                     continue;
                 }
-                else{
-                    setY(getY()-1);
-                    d--;
+                if(opc == 2){
                     _direcao = 'c';
+                    y -= 1;
+                    d--;
                     continue;
                 }
             }
-            //entrada do quadrado externo pro interno
-            else if(getY() == 6 && getX() == 4){
+            //ENTRADA EXTERNO PRO INTERNO
+            else if(y == 4 && x == 6){
                 _direcao = 'c';
-            }
-            //saida do quadrado interno pro externo
-            else if(getY() == 4 && getX() == 0){
-                _direcao = 'b';
-            }
-            //quinas
-            else if((getY() == 0 && getX() == 0) || (getY() == 6 && getX() == 2)){
-                _direcao = 'b';
-            }
-            
-            else{
-                setX(getX()-1);
+                y -= 1;
                 d--;
                 continue;
             }
+            //SAIDA INTERNO PRO EXTERNO E QUINAS
+            else if((y == 4 && x == 0) || x-1 < 0|| mapa[x-1][y] == 'P'){
+                _direcao = 'b';
+                y += 1;
+                d--;
+                continue;
+            }
+            else if(mapa[x-1][y] != 'P'){
+                x -= 1;
+                d--;
+                continue;
+            }
+            if(d == 0) break;
         }
-        if(d == 0) break;
     }
-
+    setX(x);
+    setY(y);
 }
-
-
+ 
 int Hero::rollDice(){
     return 1+rand()%6;
 }
@@ -318,7 +314,7 @@ void Hero::response(int atk){
 }
 
 int Hero::defense(int atk){
-    int def = rollDice();
+    int def = rollDice() + _def;
     if(def > atk){
         def = 0;
     }
@@ -363,6 +359,7 @@ void Hero::setLife(int x){
         _life = 0;
         return;
     }
+    else
     _life += x;
 
 }
@@ -428,4 +425,28 @@ void Hero::somaAbacaxi(int x){
 }
 int Hero::getAbacaxis(){
     return _abacaxis;
+}
+
+void Hero::setOpcao(int& opc){
+    while(1){
+        try{
+            std::cin >> opc;
+            validarOpcao(opc);
+        }catch(std::invalid_argument &e){
+            std::cerr << e.what() <<"\n";
+            continue;
+        }
+        break;
+    }
+}
+
+void Hero::validarOpcao(int opc){
+    if(!std::cin){
+        std::cin.clear();
+        std::cin.ignore(1000, '\n');
+        throw std::invalid_argument("Opcao invalida, digite apenas 1 ou 2.\n");
+    }
+    if(opc != 1 && opc != 2){
+        throw std::invalid_argument("Opcao invalida, digite apenas 1 ou 2.\n");
+    }
 }

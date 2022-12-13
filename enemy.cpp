@@ -24,7 +24,11 @@ int Enemy::rollDice(){
 }
 
 int Enemy::attack(){
-    return rollDice();
+    //PARA VER SE A DEFESA FICA UTIL
+    if((1+rand()%6)%2 == 0)
+        return rollDice()+1;
+    else
+        return rollDice();
 }
 
 void Enemy::response(int atk){

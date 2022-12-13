@@ -19,224 +19,225 @@
 BossEnemy::BossEnemy(std::string nome, int life, int dx, int dy, int especial,  int desloc, char di) :
     Enemy(nome, life, dx, dy), _especial(especial), _sw(40), _desloc(desloc), _direcao(di){}
 
-BossEnemy::~BossEnemy(){
+BossEnemy::~BossEnemy(){}
 
-}
-
-void BossEnemy::walk(){
+void BossEnemy::walk(char mapa[10][10]){
     int d = rollDice();
-    std::cout << "Dado: " << d << "\n";
+    std::cout << "~~~~~~~~~~~~\n" <<  getName() << " jogou o dado: " << d << "\n";
+    int x = getX();
+    int y = getY();
+
     while(d != 0){
+        //INDO PARA BAIXO
         if(_direcao == 'b'){
-            //encrusilhada de fora
-            if(getY() == 4 && getX() == 0){
+            //BIFURCACAO DE FORA
+            if(y == 4 && x == 0){
                 if((1+rand()%6)%2 == 0){
-                    setY(getY()+1);
+                    y += 1;
                     d--;
                     continue;
                 }
                 else{
                     _direcao = 'd';
+                    x += 1;
+                    d--;
+                    continue;
                 }
             }
-            //encrusilhada de dentro
-            else if(getY() == 4 && getX() == 2){
+            //BIFURCACAO DE DENTRO  *****ELE ÀS VEZES DESAPARECE QUANDO ESTA SOBRE AS CASAS (4,2) E (3,2), NA TEORIA ELE ESTA LA JA QUE QUANDO SAI REAPARECE ONDE DEVERIA (???)
+            if(y == 4 && x == 2){
                 if((1+rand()%6)%2 == 0){
-                    setY(getY()+1);
+                    y += 1;
                     d--;
                     continue;
                 }
                 else{
                     _direcao = 'e';
+                    x -= 1;
+                    d--;
+                    continue;
                 }
             }
-            //entrada do quadrado externo pro interno
-            else if(getY() == 2 && getX() == 4){
+            //ENTRADA EXTERNO PRO INTERNO
+            if(y == 2 && x == 4){
                 _direcao = 'e';
-            }
-            //saida do quadrado interno pro externo
-            else if(getY() == 8 && getX() == 4){
-                _direcao = 'd';
-            }
-            //quinas
-            else if((getY() == 8 && getX() == 0) || (getY() == 6 && getX() == 2)){
-                _direcao = 'd';
-            }
-
-            else{
-                setY(getY()+1);
+                x -= 1;
                 d--;
                 continue;
             }
+            //SAIDA INTERNO PRO EXTERNO E QUINAS
+            if((y == 8 && x == 4) || y+1 > 8 || mapa[x][y+1] == 'P'){
+                _direcao = 'd';
+                x += 1;
+                d--;
+                continue;
+            }
+            else{
+                y += 1;
+                d--;
+                continue;
+            }
+            if(d == 0) break;
         }
-        if(d == 0) break;
-    
+
+        //INDO PARA DIREITA
         if(_direcao == 'd'){
-            //encrusilhada de fora
-            if(getY() == 8 && getX() == 4){
+            //BIFURCACAO DE FORA
+            if(y == 8 && x == 4){
                 if((1+rand()%6)%2 == 0){
-                    setX(getX()+1);
+                    x += 1;
                     d--;
                     continue;
                 }
                 else{
                     _direcao = 'c';
+                    y -= 1;
+                    d--;
+                    continue;
                 }
             }
-            //encrusilhada de dentro
-            else if(getY() == 6 && getX() == 4){
+            //BIFURCACAO DE DENTRO
+            if(y == 6 && x == 4){
                 if((1+rand()%6)%2 == 0){
-                    setX(getX()+1);
+                    x += 1;
                     d--;
                     continue;
                 }
                 else{
                     _direcao = 'b';
+                    y += 1;
+                    d--;
+                    continue;
                 }
             }
-            //entrada do quadrado externo pro interno
-            else if(getY() == 4 && getX() == 2){
+            //ENTRADA EXTERNO PRO INTERNO
+            if(y == 4 && x == 2){
                 _direcao = 'b';
-            }
-            //saida do quadrado interno pro externo
-            else if(getY() == 4 && getX() == 8){
-                _direcao = 'c';
-            }
-            //quinas
-            else if((getY() == 8 && getX() == 8) || (getY() == 6 && getX() == 6)){
-                _direcao = 'c';
-            }
-
-            else{
-                setX(getX()+1);
+                y += 1;
                 d--;
                 continue;
             }
+            //SAIDA INTERNO PRO EXTERNO E QUINAS
+            if((y == 4 && x == 8) || x+1 > 8 || mapa[x+1][y] == 'P'){
+                _direcao = 'c';
+                y -= 1;
+                d--;
+                continue;
+            }
+            else{
+                x += 1;
+                d--;
+                continue;
+            }
+            if(d == 0) break;
         }
 
-        if(d == 0) break;
-
+        //INDO PARA CIMA
         if(_direcao == 'c'){
-            //encrusilhada de fora
-            if(getY() == 4 && getX() == 8){
+            //BIFURCACAO DE FORA
+            if(y == 4 && x == 8){
                 if((1+rand()%6)%2 == 0){
-                    setY(getY()-1);
+                    y -= 1;
                     d--;
                     continue;
                 }
                 else{
                     _direcao = 'e';
+                    x -= 1;
+                    d--;
+                    continue;
                 }
             }
-            //encrusilhada de dentro
-            else if(getY() == 4 && getX() == 6){
+            //BIFURCACAO DE DENTRO
+            if(y == 6 && x == 4){
                 if((1+rand()%6)%2 == 0){
-                    setY(getY()-1);
+                    y -= 1;
                     d--;
                     continue;
                 }
                 else{
                     _direcao = 'd';
+                    x += 1;
+                    d--;
+                    continue;
                 }
             }
-            //entrada do quadrado externo pro interno
-            else if(getY() == 6 && getX() == 4){
+            //ENTRADA EXTERNO PRO INTERNO
+            if(y == 6 && x == 4){
                 _direcao = 'd';
-            }
-            //saida do quadrado interno pro externo
-            else if(getY() == 0 && getX() == 4){
-                _direcao = 'e';
-            }
-            //quinas
-            else if((getY() == 0 && getX() == 8) || (getY() == 2 && getX() == 6)){
-                _direcao = 'e';
-            }
-            
-            else{
-                setY(getY()-1);
+                x += 1;
                 d--;
                 continue;
             }
+            //SAIDA INTERNO PRO EXTERNO E QUINAS
+            if((y == 0 && x == 4) || y-1 < 0 || mapa[x][y-1] == 'P'){
+                _direcao = 'e';
+                x -= 1;
+                d--;
+                continue;
+            }
+            else{
+                y-= 1;
+                d--;
+                continue;
+            }
+            if(d == 0) break;
         }
 
-        if(d == 0) break;
-
+        //INDO PARA ESQUERDA
         if(_direcao == 'e'){
-            //encrusilhada de fora
-            if(getY() == 0 && getX() == 4){
+            //BIFURCACAO DE FORA
+            if(y == 0 && x == 4){
                 if((1+rand()%6)%2 == 0){
-                    setX(getX()-1);
+                    x -= 1;
                     d--;
                     continue;
                 }
                 else{
                     _direcao = 'b';
+                    y += 1;
+                    d--;
+                    continue;
                 }
             }
-            //encrusilhada de dentro
-            else if(getY() == 2 && getX() == 4){
+            //BIFURCACAO DE DENTRO
+            if(y == 2 && x == 4){
                 if((1+rand()%6)%2 == 0){
-                    setX(getX()-1);
+                    x -= 1;
                     d--;
                     continue;
                 }
                 else{
                     _direcao = 'c';
+                    y -= 1;
+                    d--;
+                    continue;
                 }
             }
-            //entrada do quadrado externo pro interno
-            else if(getY() == 6 && getX() == 4){
+            //ENTRADA EXTERNO PRO INTERNO
+            if(y == 6 && x == 4){
                 _direcao = 'c';
-            }
-            //saida do quadrado interno pro externo
-            else if(getY() == 4 && getX() == 0){
-                _direcao = 'b';
-            }
-            //quinas
-            else if((getY() == 0 && getX() == 0) || (getY() == 6 && getX() == 2)){
-                _direcao = 'b';
-            }
-            
-            else{
-                setX(getX()-1);
+                y -= 1;
                 d--;
                 continue;
             }
+            //SAIDA INTERNO PRO EXTERNO E QUINAS
+            if((y == 4 && x == 0) || x-1 < 0|| mapa[x][y] == 'P'){
+                _direcao = 'b';
+                y += 1;
+                d--;
+                continue;
+            }
+            else{
+                x -= 1;
+                d--;
+                continue;
+            }
+            if(d == 0) break;
         }
-        if(d == 0) break;
     }
-
-    /*while(d != 0){
-        if(getY() == 4 && getX() == 0){
-            if((1+rand()%6)%2 == 0)
-                setY(getY()+1);
-            else
-                setX(getX()+2);
-            d--;
-        }
-        if(getY() == 4 && getX() == 2){
-            setX(getX()+1);
-            d--;
-        }
-        if(getX()== 0 && getY() < 8){
-            setY(getY()+1);
-            d--;
-        }
-        else if(getX() < 8 && getY() == 8){
-            setX(getX()+1);
-            d--;
-        }
-        else if(getY() == 0 && getX() > 0){
-            setX(getX()-1);
-            d--;
-        }
-        else if(getY() < 8 && getX() == 8){
-            setY(getY()-1);
-            d--;
-        }
-
-        if(d == 0) break;
-    }*/
+    setX(x);
+    setY(y);
 }
 
 //GETS E SETS
@@ -245,7 +246,6 @@ int BossEnemy::getPosX(){
 }
 void BossEnemy::setPosX(int x){
     _dx + _desloc;
-    
 }
 
 int BossEnemy::getPosY(){
@@ -260,7 +260,6 @@ int BossEnemy::getX(){
 }
 void BossEnemy::setX(int x){
     _dx = 60*x + _desloc;
-    
 }
 
 int BossEnemy::getY(){

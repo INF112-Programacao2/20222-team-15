@@ -8,7 +8,6 @@
 #include <allegro5/mouse.h>
 
 #include <iostream>
-#include <stdio.h>
 #include <string>
 #include <time.h>
 
@@ -44,58 +43,58 @@ int main(){
         
     //INICIA ALLEGRO
 	if(!al_init()) {
-		fprintf(stderr, "failed to initialize allegro!\n");
+		std::cerr << "failed to initialize allegro!\n";
 		return -1;
 	}
 	
     //INICIA PRIMITIVAS
     if(!al_init_primitives_addon()){
-		fprintf(stderr, "failed to initialize primitives!\n");
+		std::cerr << "failed to initialize primitives!\n";
         return -1;
     }	
 	
 	//INICIA MODULO DE CARREGAR IMAGEM
 	if(!al_init_image_addon()){
-		fprintf(stderr, "failed to initialize image module!\n");
+		std::cerr << "failed to initialize image module!\n";
 		return -1;
 	}
    
 	//CRIA TEMPORIZADOR
     timer = al_create_timer(1.0 / FPS);
     if(!timer) {
-		fprintf(stderr, "failed to create timer!\n");
+		std::cerr << "failed to create timer!\n";
 		return -1;
 	}
  
 	//CRIA TELA (LARGURA, ALTURA) EM PIXELS
 	display = al_create_display(SCREEN_W, SCREEN_H);
 	if(!display) {
-		fprintf(stderr, "failed to create display!\n");
+		std::cerr << "failed to create display!\n";
 		al_destroy_timer(timer);
 		return -1;
 	}
 
 	if(!al_install_keyboard()) {
-		fprintf(stderr, "failed to initialize keyboard!\n");
+		std::cerr << "failed to initialize keyboard!\n";
 		return -1;
 	}
 
 	if(!al_install_mouse()) {
-		fprintf(stderr, "failed to initialize mouse!\n");
+		std::cerr << "failed to initialize mouse!\n";
 		return -1;
 	}
 
     al_init_font_addon();
 	//INICIA MODULO QUE INTERPRETA FONTES TFF
 	if(!al_init_ttf_addon()) {
-		fprintf(stderr, "failed to load tff font module!\n");
+		std::cerr << "failed to load tff font module!\n";
 		return -1;
 	}
 
  	//CRIA FILA DE EVENTOS
 	event_queue = al_create_event_queue();
 	if(!event_queue) {
-		fprintf(stderr, "failed to create event_queue!\n");
+		std::cerr << "failed to create event_queue!\n";
 		al_destroy_display(display);
 		al_destroy_timer(timer);
 		return -1;
@@ -107,31 +106,44 @@ int main(){
 	al_register_event_source(event_queue, al_get_keyboard_event_source());  	
 
 	ALLEGRO_BITMAP *bitmap = al_load_bitmap("mapa.bmp");
-    ALLEGRO_BITMAP *batalhaTRet = al_load_bitmap("batalhaTRet.bmp");
-    ALLEGRO_FONT *fonte = al_load_font("arial.ttf", 40, 0);
+	ALLEGRO_FONT *fonte = al_load_font("arial.ttf", 40, 0);
     ALLEGRO_COLOR branco = al_map_rgb(255, 255, 255);
+
+	if (!bitmap){
+		std::cerr << "failed to load mapa.bmp\n";
+		al_destroy_display(display);
+		return -1;
+	}
+	if (!fonte){
+		std::cerr << "failed to load arial.ttf\n";
+		al_destroy_display(display);
+		return -1;
+	}
+
+
 ///////////////////////////////////////////////////////////////////
-	Hero BR("Big Robinho", 0, 5, 0, 2, 2, 10, 0, 'b');
-	Hero Ari("Ari", 2, 3, 3, 2, 6, 20, 0, 'd');
-	Hero Jeff("Jeff??", 1, 5, 1, 6, 2, 30, 0, 'e');
-	Hero Cadu("Cadu", -1, 4, 0, 6, 6, 40, 0, 'c');
-    BossEnemy Cuadrado("Cuadrado", 40, 5, 4, 2, 50, 'b');
+	Hero BR("Big Robinho", 0, 5, 3, 0, 2, 2, 10, 0, 'b');
+	Hero Ari("Ari", 2, 3, 0, 3, 2, 6, 20, 0, 'd');
+	Hero Jeff("Jeff??", 1, 5, -1, 1, 6, 2, 30, 0, 'e');
+	Hero Cadu("Cadu", -1, 4, 1, 0, 6, 6, 40, 0, 'c');
+    BossEnemy Cuadrado("Cuadrado", 20, 5, 4, 2, 50, 'b');
     Cuadrado.setX(0);
     Cuadrado.setY(0);
     Enemy T_Ret("T-Ret", 4, 0, 0);
     Board tabuleiro;
-	int auxCharacter = 0;
+	
+	//int metaDeAbacaxis;
 	bool ganhou = false;
-
-	//TEMPORIZADOR
-    al_start_timer(timer);
+	
+	al_start_timer(timer);
 	srand(time(NULL));
-
+	
 	int emJogo = 1;
+	int auxCharacter = 0;
 	while(emJogo) {
 		ALLEGRO_EVENT ev;
-		al_wait_for_event(event_queue, &ev);
 		
+		al_wait_for_event(event_queue, &ev);
         //al_clear_to_color(al_map_rgb(0, 0, 0));
         
         const char *hpBR = std::to_string(BR.getLife()).c_str();
@@ -173,37 +185,30 @@ int main(){
 		if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
 			emJogo = 0;
 		}
-		if(BR.getAbacaxis() == 40) {
+		if(BR.getAbacaxis() >= 30 || Cuadrado.getLife() <= 0) {
 			ganhou = true;
 			emJogo = 0;
-			break;
-		}
-		if(Cuadrado.getLife() == 0) {
-			ganhou = true;
-			emJogo = 0;
-			
 		}
 		if(BR.getLife() == 0 && Ari.getLife() == 0 && Jeff.getLife() == 0 && Cadu.getLife() == 0) {
 			ganhou = false;
 			emJogo = 0;
-			
 		}
         
 		if(auxCharacter == 0){
 			if(!BR.isAlive()){
+				std::cout << BR.getLife() << "\n";
 				auxCharacter=1;
 				continue;
 			}
 			if(ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-				if(ev.mouse.x <= 548 && ev.mouse.y <=548){ 
+				if(ev.mouse.x < 1068 && ev.mouse.y < 720){
 					BR.walk(mapa, ev.mouse.x/60, ev.mouse.y/60);
 					tabuleiro.isQualCasaHero(BR, mapa);
 					if(BR.getX() == Ari.getX() && BR.getY() == Ari.getY() && !Ari.isAlive()) tabuleiro.revive(Ari);
 					if(BR.getX() == Jeff.getX() && BR.getY() == Jeff.getY() && !Jeff.isAlive()) tabuleiro.revive(Jeff);
 					if(BR.getX() == Cadu.getX() && BR.getY() == Cadu.getY() && !Cadu.isAlive()) tabuleiro.revive(Cadu);
-
+					if(BR.getX() == Cuadrado.getX() && BR.getY() == Cuadrado.getY()) tabuleiro.battle(BR, Cuadrado);
 				}
-
 				auxCharacter=1;
 			}
 
@@ -221,11 +226,11 @@ int main(){
 					if(Ari.getX() == BR.getX() && Ari.getY() == BR.getY() && !BR.isAlive()) tabuleiro.revive(BR);
 					if(Ari.getX() == Jeff.getX() && Ari.getY() == Jeff.getY() && !Jeff.isAlive()) tabuleiro.revive(Jeff);
 					if(Ari.getX() == Cadu.getX() && Ari.getY() == Cadu.getY() && !Cadu.isAlive()) tabuleiro.revive(Cadu);
+					if(Ari.getX() == Cuadrado.getX() && Ari.getY() == Cuadrado.getY()) tabuleiro.battle(Ari, Cuadrado);
 				}
 
 				auxCharacter=2;
 			}
-
 		}
 
 		else if(auxCharacter == 2){
@@ -234,14 +239,14 @@ int main(){
 				continue;
 			}
 			if(ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-				if(ev.mouse.x <= 548 && ev.mouse.y <=548){              
+				if(ev.mouse.x < 1068 && ev.mouse.y < 720){           
                 	Jeff.walk(mapa, ev.mouse.x/60, ev.mouse.y/60);
 					tabuleiro.isQualCasaHero(Jeff, mapa);
 					if(Jeff.getX() == BR.getX() && Jeff.getY() == BR.getY() && !BR.isAlive()) tabuleiro.revive(BR);
 					if(Jeff.getX() == Ari.getX() && Jeff.getY() == Ari.getY() && !Ari.isAlive()) tabuleiro.revive(Ari);
 					if(Jeff.getX() == Cadu.getX() && Jeff.getY() == Cadu.getY() && !Cadu.isAlive()) tabuleiro.revive(Cadu);
+					if(Jeff.getX() == Cuadrado.getX() && Jeff.getY() == Cuadrado.getY()) tabuleiro.battle(Jeff, Cuadrado);
 				}
-
 				auxCharacter=3;
 			}
 
@@ -259,23 +264,25 @@ int main(){
 					if(Cadu.getX() == BR.getX() && Cadu.getY() == BR.getY() && !BR.isAlive()) tabuleiro.revive(BR);
 					if(Cadu.getX() == Ari.getX() && Cadu.getY() == Ari.getY() && !Ari.isAlive()) tabuleiro.revive(Ari);
 					if(Cadu.getX() == Jeff.getX() && Cadu.getY() == Jeff.getY() && !Jeff.isAlive()) tabuleiro.revive(Jeff);
+					if(Cadu.getX() == Cuadrado.getX() && Cadu.getY() == Cuadrado.getY()) tabuleiro.battle(Cadu, Cuadrado);
 				}
-
 				auxCharacter=4;
 			}
 
 		}
 
 		else if(auxCharacter == 4){
-		 	Cuadrado.walk();
-			al_flip_display();
-			tabuleiro.isQualCasaBoss(Cuadrado, mapa);				
-			if(Cuadrado.getX() == BR.getX() && Cuadrado.getY() == BR.getY()) tabuleiro.battle(Cuadrado, BR);
-			if(Cuadrado.getX() == Ari.getX() && Cuadrado.getY() == Ari.getY()) tabuleiro.battle(Cuadrado, Ari);
-			if(Cuadrado.getX() == Jeff.getX() && Cuadrado.getY() == Jeff.getY()) tabuleiro.battle(Cuadrado, Jeff);
-			if(Cuadrado.getX() == Cadu.getX() && Cuadrado.getY() == Cadu.getY()) tabuleiro.battle(Cuadrado, Cadu);
+			if(ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){				
+				Cuadrado.walk(mapa);
+				al_flip_display();
+				tabuleiro.isQualCasaBoss(Cuadrado, mapa);				
+				if(Cuadrado.getX() == BR.getX() && Cuadrado.getY() == BR.getY() && BR.isAlive()) tabuleiro.battle(Cuadrado, BR);
+				if(Cuadrado.getX() == Ari.getX() && Cuadrado.getY() == Ari.getY() && Ari.isAlive()) tabuleiro.battle(Cuadrado, Ari);
+				if(Cuadrado.getX() == Jeff.getX() && Cuadrado.getY() == Jeff.getY() && Jeff.isAlive()) tabuleiro.battle(Cuadrado, Jeff);
+				if(Cuadrado.getX() == Cadu.getX() && Cuadrado.getY() == Cadu.getY() && Cadu.isAlive()) tabuleiro.battle(Cuadrado, Cadu);
 
-			auxCharacter=0;
+				auxCharacter=0;
+			}
 		}
 		
         al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -293,8 +300,8 @@ int main(){
         delete abacaxiJeff;
 
     }
-	if(ganhou) std::cout << "\n\nVOCE GANHOU\n\n";
-	else std::cout << "\n\nVOCE PERDEU\n\n";
+	if(ganhou) std::cout << "\n\n --- VOCE GANHOU ---\n\n"; //ADICIONEI FIRULAS INUTEIS ÀS MENSAGENS DE FIM DE JOGO
+	else std::cout << "\n\n --- VOCE PERDEU --- \n\n";
 
     //DESTROOOOOOOOOOOOOOOOOI
     al_destroy_bitmap(bitmap);

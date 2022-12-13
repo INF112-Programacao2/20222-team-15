@@ -6,8 +6,7 @@
 #include "enemy.h"
 #include "bossEnemy.h"
 
-Board::Board(){
-}
+Board::Board(){}
 
 Board::~Board(){}
 
@@ -36,6 +35,10 @@ void Board::isQualCasaBoss(BossEnemy& b, char mapa[10][10]){
 void Board::isCasaEnemy(Hero& h){
     Enemy T_Ret("T-Ret", 4, 0, 0);
     battle(T_Ret, h);
+    if(!T_Ret.isAlive()){
+        h.setPineapple(3);
+        std::cout << "T-Ret foi derrotado, ganhou 3 Abacaxis\n";
+    }
 }
 void Board::isCasaWarp(CharacterIF& c){
     c.setX(8 - c.getX());
@@ -58,7 +61,7 @@ void Board::isCasaWarp(CharacterIF& c){
     }
 }
 void Board::isCasaDropPineapples(Hero& h){
-    h.setPineapple(-3);
+    h.setPineapple(-4);
 }
 void Board::isCasaGetBonus(Hero& h){
     h.setPineapple(4);
@@ -82,8 +85,10 @@ void Board::battle(CharacterIF& atkr, CharacterIF& defdr){
         atk = defdr.attack();
         atkr.response(atk);
     }
+    return;
 }
 
 void Board::revive(Hero& h){
     h.setLife(h.getMaxLife()/2);
+    return;
 }
