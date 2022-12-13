@@ -2,7 +2,7 @@
 20222-team-15
 Trabalho final da disciplina de INF112 - Programação 2
 
-    -> Jogo de tabuleiro inspirado em 100% orange juice
+    -> Jogo de tabuleiro inspirado em 100% Orange Juice
         
         Você controla os movimentos pelo Terminal (cmd)
 
@@ -11,16 +11,16 @@ Trabalho final da disciplina de INF112 - Programação 2
             Casas Laranjas: Deixará cair 4 Abacaxis
             Casas Amarelas: Encontrará 4 Abacaxis, que sorte
             Casas Rosas: Será teleportado para o outro canto do mapa
-            Casas de Cura: Terá sua vida restaurada por completo e, caso tenha no mínimo 5 Abacaxis, poderá depositálos no pote
+            Casas de Cura: Terá sua vida restaurada por completo e, caso tenha no mínimo 5 Abacaxis, poderá depositá-los no pote
             Casas Cinzas: Não fazem nada
             Um de seus companheiros caídos: Ele ressucitará com metade da vida máxima
         
         Fuja do inimigo
-            Caso Cuadrado e você se encontrem quem estava andando iniciará uma batalha com o outro, mate-o e você ganha o jogo
+            Caso Cuadrado e você se encontrem, quem estava andando iniciará uma batalha com o outro, mate-o e você ganha o jogo
         
         Em batalhas
             Seus pontos de ataque, defesa e esquiva serão somados ao número do dado (D6)
-            Para defender um ataque sua defesa precisa ser menor ou igual ao ataque do adversário, o dano recebido será ataque - defesa
+            Para defender um ataque sua defesa precisa ser menor ou igual ao ataque do adversário, o dano recebido será (ataque - defesa)
             Para esquivar de um ataque sua esquiva precisa ser maior que o ataque do adversário, assim nenhum dano será recebido
             Caso tente e não consiga defender ou esquivar, todo o dano será recebido
 
